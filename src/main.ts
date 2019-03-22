@@ -16,7 +16,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     const testHub = testExplorerExtension.exports;
 
     context.subscriptions.push(
-      new TestAdapterRegistrar(testHub, workspaceFolder => new TestAdapter(workspaceFolder), undefined),
+      new TestAdapterRegistrar(testHub, workspaceFolder => new TestAdapter(workspaceFolder, context), undefined),
     );
   }
 }

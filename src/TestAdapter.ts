@@ -51,7 +51,10 @@ export class TestAdapter implements api.TestAdapter, vscode.Disposable {
   private readonly _shared: SharedVariables;
   private _rootSuite: RootTestSuiteInfo;
 
-  public constructor(public readonly workspaceFolder: vscode.WorkspaceFolder) {
+  public constructor(
+    public readonly workspaceFolder: vscode.WorkspaceFolder,
+    public readonly context: vscode.ExtensionContext,
+  ) {
     this._log = new util.Log(
       'catch2TestExplorer',
       this.workspaceFolder,
@@ -159,6 +162,7 @@ export class TestAdapter implements api.TestAdapter, vscode.Disposable {
       this._getEnableCodeLens(config),
       this._getOpenCppCoveragePath(config),
       this._getEnableTestListCaching(config),
+      this.context,
     );
 
     this._disposables.push(

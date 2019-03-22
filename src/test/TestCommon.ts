@@ -220,7 +220,7 @@ export class TestAdapter extends my.TestAdapter {
   private readonly testStatesEventsConnection: vscode.Disposable;
 
   public constructor() {
-    super(settings.workspaceFolder);
+    super(settings.workspaceFolder, null);
 
     this.testLoadsEventsConnection = this.tests((e: TestLoadStartedEvent | TestLoadFinishedEvent) => {
       this.testLoadsEvents.push(e);

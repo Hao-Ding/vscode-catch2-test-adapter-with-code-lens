@@ -50,9 +50,8 @@ export abstract class AbstractTestSuiteInfo extends AbstractTestSuiteInfoBase {
 
     const childrenToRun: Set<AbstractTestInfo> = new Set<AbstractTestInfo>();
 
-    this.enumerateDescendants((v: AbstractTestSuiteInfoBase | AbstractTestInfo) => {
-      const explicitlyIn = tests.delete(v.id);
-      if (explicitlyIn) {
+    if (tests.delete(this.id)) {
+      this.enumerateDescendants((v: AbstractTestSuiteInfoBase | AbstractTestInfo) => {
         if (v instanceof AbstractTestInfo) {
           childrenToRun.add(v);
         } else if (v instanceof AbstractTestSuiteInfoBase) {
@@ -63,8 +62,24 @@ export abstract class AbstractTestSuiteInfo extends AbstractTestSuiteInfoBase {
           this._shared.log.error('unknown case', v, this);
           debugger;
         }
-      }
-    });
+      });
+    } else {
+      this.enumerateDescendants((v: AbstractTestSuiteInfoBase | AbstractTestInfo) => {
+        const explicitlyIn = tests.delete(v.id);
+        if (explicitlyIn) {
+          if (v instanceof AbstractTestInfo) {
+            childrenToRun.add(v);
+          } else if (v instanceof AbstractTestSuiteInfoBase) {
+            v.enumerateTestInfos(vv => {
+              if (!vv.skipped) childrenToRun.add(vv);
+            });
+          } else {
+            this._shared.log.error('unknown case', v, this);
+            debugger;
+          }
+        }
+      });
+    }
 
     if (childrenToRun.size == 0) return Promise.resolve();
 
@@ -92,8 +107,7 @@ export abstract class AbstractTestSuiteInfo extends AbstractTestSuiteInfoBase {
     var runInfo: RunningTestExecutableInfo;
 
     if (this._shared.isCodeLens) {
-      this._cacheFile =
-        this._shared.workspaceFolder.uri.fsPath + '/.vscode/test-result/' + childToRun.testNameFull + '.xml';
+      this._cacheFile = this._shared.context.storagePath + '/test-result/' + childToRun.testNameFull + '.xml';
 
       var forwardParams = [
         '--export_type',
@@ -104,7 +118,7 @@ export abstract class AbstractTestSuiteInfo extends AbstractTestSuiteInfoBase {
         '--',
         this.execPath,
       ];
-      forwardParams.concat(execParams);
+      forwardParams = forwardParams.concat(execParams);
       runInfo = new RunningTestExecutableInfo(
         cp.spawn(this._shared.pathToOpenCppCoverage, forwardParams, execOptions),
         childToRun,

@@ -228,8 +228,6 @@ export class GoogleTestSuiteInfo extends AbstractTestSuiteInfo {
     const execParams: string[] = ['--gtest_color=no'];
     {
       execParams.push('--gtest_filter=' + childToRun.testNameFull);
-
-      execParams.push('--gtest_also_run_disabled_tests');
     }
 
     if (this._shared.rngSeed !== null) {

@@ -24,6 +24,7 @@ export class SharedVariables implements vscode.Disposable {
     public isCodeLens: boolean,
     public pathToOpenCppCoverage: string,
     public enabledTestListCaching: boolean,
+    public readonly context: vscode.ExtensionContext,
   ) {}
 
   public dispose(): void {
