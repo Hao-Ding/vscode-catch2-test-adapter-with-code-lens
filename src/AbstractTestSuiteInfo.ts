@@ -15,6 +15,7 @@ import { RunningTestExecutableInfo } from './RunningTestExecutableInfo';
 export abstract class AbstractTestSuiteInfo extends AbstractTestSuiteInfoBase {
   private _canceled: boolean = false;
   private _runInfo: RunningTestExecutableInfo | undefined = undefined;
+  private _cacheFile: string = '';
 
   public constructor(
     shared: SharedVariables,
@@ -27,7 +28,7 @@ export abstract class AbstractTestSuiteInfo extends AbstractTestSuiteInfoBase {
 
   abstract reloadChildren(): Promise<void>;
 
-  protected abstract _getRunParams(childrenToRun: 'runAllTestsExceptSkipped' | Set<AbstractTestInfo>): string[];
+  protected abstract _getRunParams(childToRun: AbstractTestInfo): string[];
 
   protected abstract _handleProcess(runInfo: RunningTestExecutableInfo): Promise<void>;
 
@@ -47,43 +48,40 @@ export abstract class AbstractTestSuiteInfo extends AbstractTestSuiteInfoBase {
       this._runInfo = undefined;
     }
 
-    const childrenToRun = tests.delete(this.id) ? 'runAllTestsExceptSkipped' : new Set<AbstractTestInfo>();
+    const childrenToRun: Set<AbstractTestInfo> = new Set<AbstractTestInfo>();
 
-    if (childrenToRun === 'runAllTestsExceptSkipped') {
-      this.enumerateDescendants(v => {
-        tests.delete(v.id);
-      });
-    } else {
-      this.enumerateDescendants((v: AbstractTestSuiteInfoBase | AbstractTestInfo) => {
-        const explicitlyIn = tests.delete(v.id);
-        if (explicitlyIn) {
-          if (v instanceof AbstractTestInfo) {
-            childrenToRun.add(v);
-          } else if (v instanceof AbstractTestSuiteInfoBase) {
-            v.enumerateTestInfos(vv => {
-              if (!vv.skipped) childrenToRun.add(vv);
-            });
-          } else {
-            this._shared.log.error('unknown case', v, this);
-            debugger;
-          }
+    this.enumerateDescendants((v: AbstractTestSuiteInfoBase | AbstractTestInfo) => {
+      const explicitlyIn = tests.delete(v.id);
+      if (explicitlyIn) {
+        if (v instanceof AbstractTestInfo) {
+          childrenToRun.add(v);
+        } else if (v instanceof AbstractTestSuiteInfoBase) {
+          v.enumerateTestInfos(vv => {
+            if (!vv.skipped) childrenToRun.add(vv);
+          });
+        } else {
+          this._shared.log.error('unknown case', v, this);
+          debugger;
         }
-      });
-
-      if (childrenToRun.size == 0) return Promise.resolve();
-    }
-
-    return taskPool.scheduleTask(() => {
-      if (this._canceled) {
-        this._shared.log.info('test was canceled:', this);
-        return Promise.resolve();
       }
-      return this._runInner(childrenToRun);
     });
+
+    if (childrenToRun.size == 0) return Promise.resolve();
+
+    return Promise.all(
+      Array.from(childrenToRun, element =>
+        taskPool.scheduleTask(() => {
+          if (this._canceled) {
+            this._shared.log.info('test was canceled:', this);
+            return Promise.resolve();
+          } else return this._runInner(element);
+        }),
+      ),
+    ).then(() => Promise.resolve());
   }
 
-  private _runInner(childrenToRun: 'runAllTestsExceptSkipped' | Set<AbstractTestInfo>): Promise<void> {
-    const execParams = this._getRunParams(childrenToRun);
+  private _runInner(childToRun: AbstractTestInfo): Promise<void> {
+    const execParams = this._getRunParams(childToRun);
 
     this._shared.log.info('proc starting: ', this.origLabel);
 
@@ -91,8 +89,27 @@ export abstract class AbstractTestSuiteInfo extends AbstractTestSuiteInfoBase {
 
     const execOptions = Object.assign({}, this.execOptions);
     execOptions.env = Object.assign({}, Object.assign(process.env, execOptions.env));
+    var runInfo: RunningTestExecutableInfo;
 
-    const runInfo = new RunningTestExecutableInfo(cp.spawn(this.execPath, execParams, execOptions), childrenToRun);
+    if (this._shared.isCodeLens) {
+      this._cacheFile =
+        this._shared.workspaceFolder.uri.fsPath + '/.vscode/test-result/' + childToRun.testNameFull + '.xml';
+
+      var forwardParams = [
+        '--export_type',
+        'cobertura:' + this._cacheFile,
+        '--module',
+        this.execPath.replace(/^.*[\\\/]/, ''),
+        '--optimized_build',
+        '--',
+        this.execPath,
+      ];
+      forwardParams.concat(execParams);
+      runInfo = new RunningTestExecutableInfo(
+        cp.spawn(this._shared.pathToOpenCppCoverage, forwardParams, execOptions),
+        childToRun,
+      );
+    } else runInfo = new RunningTestExecutableInfo(cp.spawn(this.execPath, execParams, execOptions), childToRun);
 
     this._runInfo = runInfo;
 

@@ -224,13 +224,10 @@ export class GoogleTestSuiteInfo extends AbstractTestSuiteInfo {
       });
   }
 
-  protected _getRunParams(childrenToRun: 'runAllTestsExceptSkipped' | Set<GoogleTestInfo>): string[] {
+  protected _getRunParams(childToRun: GoogleTestInfo): string[] {
     const execParams: string[] = ['--gtest_color=no'];
-
-    if (childrenToRun !== 'runAllTestsExceptSkipped') {
-      const testNames = [...childrenToRun].map(c => c.testNameFull);
-
-      execParams.push('--gtest_filter=' + testNames.join(':'));
+    {
+      execParams.push('--gtest_filter=' + childToRun.testNameFull);
 
       execParams.push('--gtest_also_run_disabled_tests');
     }
@@ -387,11 +384,7 @@ export class GoogleTestSuiteInfo extends AbstractTestSuiteInfo {
           this._shared.testStatesEmitter.fire({ type: 'suite', suite: data.group, state: 'completed' });
         }
 
-        const isTestRemoved =
-          runInfo.timeout == undefined &&
-          ((runInfo.childrenToRun === 'runAllTestsExceptSkipped' &&
-            this.getTestInfoCount(false) > data.processedTestCases.length) ||
-            (runInfo.childrenToRun !== 'runAllTestsExceptSkipped' && data.processedTestCases.length == 0));
+        const isTestRemoved = runInfo.timeout == undefined && data.processedTestCases.length == 0;
 
         if (data.unprocessedTestCases.length > 0 || isTestRemoved) {
           new Promise<void>((resolve, reject) => {

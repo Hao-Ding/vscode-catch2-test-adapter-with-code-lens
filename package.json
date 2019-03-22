@@ -90,6 +90,27 @@
       "title": "Configuration for the 'Catch2 and Google Test Explorer' extension",
       "$comment": "Enums will cause that the vscode will offer auto-completion.",
       "properties": {
+        "catch2TestExplorer.enableCodeLens": {
+          "markdownDescription": "(Experimental) Enables code lens for tests. Currently works only on Windows on binaries with PDB debug information. You need to have [OpenCppCoverage](https://github.com/OpenCppCoverage/OpenCppCoverage) available in your path (or configured by catch2TestExplorer.openCppCoveragePath )",
+          "scope": "resource",
+          "default": false,
+          "type": "boolean"
+        },
+        "catch2TestExplorer.openCppCoveragePath": {
+          "markdownDescription": "(Experimental) The full path to [OpenCppCoverage](https://github.com/OpenCppCoverage/OpenCppCoverage) binary required for code lens. Only valid on Windows, with PDB-built binaries",
+          "scope": "resource",
+          "default": "OpenCppCoverage.exe",
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": "OpenCppCoverage.exe"
+            },
+            {
+              "type": "string",
+              "minLength": "1"
+            }
+          ]
+        },
         "catch2TestExplorer.executables": {
           "markdownDescription": "The location of your test executables (relative to the workspace folder or absolute path) and with a lot of other setting. [Details](https://github.com/matepek/vscode-catch2-test-adapter#catch2TestExplorerexecutables)",
           "scope": "resource",

@@ -156,6 +156,8 @@ export class TestAdapter implements api.TestAdapter, vscode.Disposable {
       this._getDefaultExecWatchTimeout(config),
       this._getDefaultExecRunningTimeout(config),
       this._getDefaultNoThrow(config),
+      this._getEnableCodeLens(config),
+      this._getOpenCppCoveragePath(config),
       this._getEnableTestListCaching(config),
     );
 
@@ -175,6 +177,12 @@ export class TestAdapter implements api.TestAdapter, vscode.Disposable {
         }
         if (configChange.affectsConfiguration('catch2TestExplorer.defaultNoThrow', this.workspaceFolder.uri)) {
           this._shared.isNoThrow = this._getDefaultNoThrow(this._getConfiguration());
+        }
+        if (configChange.affectsConfiguration('catch2TestExplorer.enableCodeLens', this.workspaceFolder.uri)) {
+          this._shared.isCodeLens = this._getEnableCodeLens(this._getConfiguration());
+        }
+        if (configChange.affectsConfiguration('catch2TestExplorer.openCppCoveragePath', this.workspaceFolder.uri)) {
+          this._shared.pathToOpenCppCoverage = this._getOpenCppCoveragePath(this._getConfiguration());
         }
         if (configChange.affectsConfiguration('catch2TestExplorer.workerMaxNumber', this.workspaceFolder.uri)) {
           this._rootSuite.workerMaxNumber = this._getWorkerMaxNumber(this._getConfiguration());
@@ -502,6 +510,14 @@ export class TestAdapter implements api.TestAdapter, vscode.Disposable {
 
   private _getDefaultNoThrow(config: vscode.WorkspaceConfiguration): boolean {
     return config.get<boolean>('defaultNoThrow', false);
+  }
+
+  private _getEnableCodeLens(config: vscode.WorkspaceConfiguration): boolean {
+    return config.get<boolean>('enableCodeLens', false);
+  }
+
+  private _getOpenCppCoveragePath(config: vscode.WorkspaceConfiguration): string {
+    return config.get<string>('openCppCoveragePath', 'OpenCppCoverage.exe');
   }
 
   private _getDefaultCwd(config: vscode.WorkspaceConfiguration): string {

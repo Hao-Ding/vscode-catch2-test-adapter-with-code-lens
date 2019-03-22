@@ -21,6 +21,8 @@ export class SharedVariables implements vscode.Disposable {
     public execWatchTimeout: number,
     private _execRunningTimeout: null | number,
     public isNoThrow: boolean,
+    public isCodeLens: boolean,
+    public pathToOpenCppCoverage: string,
     public enabledTestListCaching: boolean,
   ) {}
 

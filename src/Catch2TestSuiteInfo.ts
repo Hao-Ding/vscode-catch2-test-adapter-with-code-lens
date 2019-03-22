@@ -172,13 +172,10 @@ export class Catch2TestSuiteInfo extends AbstractTestSuiteInfo {
       });
   }
 
-  protected _getRunParams(childrenToRun: 'runAllTestsExceptSkipped' | Set<Catch2TestInfo>): string[] {
+  protected _getRunParams(childToRun: Catch2TestInfo): string[] {
     const execParams: string[] = [];
 
-    if (childrenToRun !== 'runAllTestsExceptSkipped') {
-      const testNames = [...childrenToRun].map(c => c.getEscapedTestName());
-      execParams.push(testNames.join(','));
-    }
+    execParams.push(childToRun.getEscapedTestName());
 
     execParams.push('--reporter');
     execParams.push('xml');
@@ -343,10 +340,7 @@ export class Catch2TestSuiteInfo extends AbstractTestSuiteInfo {
           }
         }
 
-        const isTestRemoved =
-          (runInfo.childrenToRun === 'runAllTestsExceptSkipped' &&
-            this.children.filter(c => !c.skipped).length > data.processedTestCases.length) ||
-          (runInfo.childrenToRun !== 'runAllTestsExceptSkipped' && data.processedTestCases.length == 0);
+        const isTestRemoved = data.processedTestCases.length == 0;
 
         if (data.unprocessedXmlTestCases.length > 0 || isTestRemoved) {
           new Promise<void>((resolve, reject) => {
