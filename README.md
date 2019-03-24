@@ -2,7 +2,7 @@
 
 **IMPORTANT: This is fork of original `Catch2 and Google Test Explorer for Visual Studio Code` repo**
 I've added ability to present code lens, directly in code:
-![Screen2](https://media.githubusercontent.com/media/Shelim/vscode-catch2-test-adapter-with-code-lens/master/screen.png)
+![screen](https://raw.githubusercontent.com/Shelim/vscode-catch2-test-adapter-with-code-lens/master/screen.png)
 
 **IMPORTANT:**
 This only works on Windows with [OpenCppCoverage](https://github.com/OpenCppCoverage/OpenCppCoverage) and compiler able to produce PDB files.
@@ -189,7 +189,7 @@ Note that `name` and `request` are filled, if they are undefined, so it is not n
 
 ## License
 
-[The Unlicense](https://choosealicense.com/licenses/unlicense/)
+MIT/X11
 
 ## Known issues
 
