@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": ["es2018"],
+    "module": "commonjs",
+    "outDir": "out",
+    "rootDir": "src",
+    "importHelpers": false,
+    "sourceMap": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "removeComments": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/main.ts"]
+}

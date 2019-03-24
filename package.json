@@ -4,7 +4,7 @@
   "description": "Run your Catch2 and Google Test tests in the Sidebar of Visual Studio Code with code lens on test status",
   "icon": "resources/icon.png",
   "author": "Piotr Kosek",
-  "publisher": "Shelim",
+  "publisher": "piotrkosek",
   "version": "2.3.28",
   "license": "MIT",
   "homepage": "https://github.com/Shelim/vscode-catch2-test-adapter-with-code-lens",
@@ -35,12 +35,12 @@
     "reinstall": "rimraf node_modules package-lock.json && npm install",
     "clean": "rimraf out node_modules vscode-catch2-test-adapter-*.vsix",
     "compile": "tsc -p ./tsconfig.test.json",
-    "compile-production": "tsc -p ./tsconfig.production.json",
+    "compile-production": "tsc -p .",
     "watch": "tsc -watch -p ./tsconfig.test.json",
     "rebuild": "npm run clean && npm run build",
     "package": "vsce package",
     "publish": "vsce publish",
-    "vscode:prepublish": "tsc -p ./tsconfig.production.json",
+    "vscode:prepublish": "tsc -p .",
     "test": "node ./node_modules/vscode/bin/test"
   },
   "extensionDependencies": [
