@@ -1,6 +1,6 @@
 # Catch2 and Google Test Explorer for Visual Studio Code (with code lens)
 
-**IMPORTANT: This is fork of original `Catch2 and Google Test Explorer for Visual Studio Code` repo**
+**IMPORTANT: This is fork of original [Catch2 and Google Test Explorer for Visual Studio Code](https://github.com/matepek/vscode-catch2-test-adapter) repo**
 I've added ability to present code lens, directly in code:
 ![screen](https://raw.githubusercontent.com/Shelim/vscode-catch2-test-adapter-with-code-lens/master/screen.png)
 
@@ -11,6 +11,10 @@ If you cannot met the requirenments, please use original version of this plugin.
 
 **Important:**
 This plugin is **not** actively maintained. Use at your own risk. If you wish so, feel free to fork this and update code.
+
+**Below you can find original readme**
+
+---
 
 This extension allows you to run your [Catch2](https://github.com/catchorg/Catch2)
 and [Google Test](https://github.com/google/googletest) tests using the
