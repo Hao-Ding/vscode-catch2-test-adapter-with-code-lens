@@ -1,19 +1,19 @@
 {
-  "name": "vscode-catch2-test-adapter",
-  "displayName": "Catch2 and Google Test Explorer",
-  "description": "Run your Catch2 and Google Test tests in the Sidebar of Visual Studio Code",
+  "name": "vscode-gtest-test-adapter-with-code-lens",
+  "displayName": "Catch2 and Google Test Explorer (with code lens)",
+  "description": "Run your Catch2 and Google Test tests in the Sidebar of Visual Studio Code with code lens on test status",
   "icon": "resources/icon.png",
-  "author": "Mate Pek",
-  "publisher": "matepek",
-  "version": "2.3.28",
-  "license": "Unlicense",
-  "homepage": "https://github.com/matepek/vscode-catch2-test-adapter",
+  "author": "Piotr Kosek",
+  "publisher": "Shelim",
+  "version": "2.3.28+",
+  "license": "MIT",
+  "homepage": "https://github.com/Shelim/vscode-catch2-test-adapter-with-code-lens",
   "repository": {
     "type": "git",
-    "url": "https://github.com/matepek/vscode-catch2-test-adapter.git"
+    "url": "https://github.com/Shelim/vscode-catch2-test-adapter-with-code-lens.git"
   },
   "bugs": {
-    "url": "https://github.com/matepek/vscode-catch2-test-adapter/issues"
+    "url": "https://github.com/Shelim/vscode-catch2-test-adapter-with-code-lens/issues"
   },
   "categories": [
     "Other"
@@ -26,7 +26,8 @@
     "test",
     "testing",
     "unit test",
-    "c++"
+    "c++",
+    "code lens"
   ],
   "main": "out/main.js",
   "scripts": {
