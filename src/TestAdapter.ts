@@ -183,6 +183,18 @@ export class TestAdapter implements api.TestAdapter, vscode.Disposable {
       }),
     );
 
+    this._disposables.push(
+      vscode.tasks.onDidStartTask(x => {
+        if (
+          x.execution.task.group == vscode.TaskGroup.Build ||
+          x.execution.task.group == vscode.TaskGroup.Rebuild ||
+          x.execution.task.group == vscode.TaskGroup.Clean ||
+          x.execution.task.group == vscode.TaskGroup.Test
+        )
+          this._shared.testResults.clearResults();
+      }),
+    );
+
     this._shared.testStatesEmitter.event((e: TestEvent) => {
       if (e.type == 'test') {
         var testResult: TestResult;

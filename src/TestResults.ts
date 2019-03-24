@@ -38,6 +38,10 @@ export class TestResults {
     this._shared.testCodeLens.reload();
   }
 
+  public removeResultsForTest(test: string): void {
+    this._results.delete(test);
+  }
+
   public clearResults(): void {
     this._results = new Map<string, TestResult>();
     this._filemap = new Map<string, Set<TestInfo>>();
