@@ -5,6 +5,8 @@
 import { Log } from 'vscode-test-adapter-util';
 import * as vscode from 'vscode';
 import { TestRunStartedEvent, TestRunFinishedEvent, TestSuiteEvent, TestEvent } from 'vscode-test-adapter-api';
+import { TestResults } from './TestResults';
+import { TestCodeLensProvider } from './TestCodeLens';
 
 export class SharedVariables implements vscode.Disposable {
   private readonly _execRunningTimeoutChangeEmitter = new vscode.EventEmitter<void>();
@@ -41,4 +43,6 @@ export class SharedVariables implements vscode.Disposable {
   }
 
   public readonly onDidChangeExecRunningTimeout = this._execRunningTimeoutChangeEmitter.event;
+  public readonly testResults: TestResults = new TestResults(this);
+  public readonly testCodeLens: TestCodeLensProvider = new TestCodeLensProvider(this);
 }

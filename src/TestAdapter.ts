@@ -25,6 +25,7 @@ import { SharedVariables } from './SharedVariables';
 import { AbstractTestInfo } from './AbstractTestInfo';
 import { Catch2Section, Catch2TestInfo } from './Catch2TestInfo';
 import { AbstractTestSuiteInfo } from './AbstractTestSuiteInfo';
+import { TestResult } from './TestResult';
 
 export class TestAdapter implements api.TestAdapter, vscode.Disposable {
   private readonly _log: util.Log;
@@ -164,6 +165,30 @@ export class TestAdapter implements api.TestAdapter, vscode.Disposable {
       this._getEnableTestListCaching(config),
       this.context,
     );
+
+    this._disposables.push(
+      vscode.languages.registerCodeLensProvider(
+        {
+          language: 'cpp',
+          scheme: 'file',
+        },
+        this._shared.testCodeLens,
+      ),
+    );
+    this._disposables.push(vscode.commands.registerCommand('extension.showTests', this._shared.testCodeLens.showTests));
+
+    this._shared.testStatesEmitter.event((e: TestEvent) => {
+      if (e.type == 'test') {
+        var testResult: TestResult;
+        if (e.state == 'passed') {
+          testResult = new TestResult(this._shared, true, e.test);
+          this._shared.testResults.addTestResult(testResult);
+        } else if (e.state == 'failed' || e.state == 'errored') {
+          testResult = new TestResult(this._shared, false, e.test);
+          this._shared.testResults.addTestResult(testResult);
+        }
+      }
+    });
 
     this._disposables.push(
       vscode.workspace.onDidChangeConfiguration(configChange => {
