@@ -177,6 +177,12 @@ export class TestAdapter implements api.TestAdapter, vscode.Disposable {
     );
     this._disposables.push(vscode.commands.registerCommand('extension.showTests', this._shared.testCodeLens.showTests));
 
+    this._disposables.push(
+      vscode.workspace.onDidChangeTextDocument(change => {
+        this._shared.testResults.removeResultsForFile(change.document.uri.fsPath);
+      }),
+    );
+
     this._shared.testStatesEmitter.event((e: TestEvent) => {
       if (e.type == 'test') {
         var testResult: TestResult;

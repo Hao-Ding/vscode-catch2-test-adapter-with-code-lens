@@ -35,11 +35,13 @@ export class TestResults {
       ret = this._filemap.get(filename);
     }
     this._filemap.delete(filename);
+    this._shared.testCodeLens.reload();
   }
 
   public clearResults(): void {
     this._results = new Map<string, TestResult>();
     this._filemap = new Map<string, Set<TestInfo>>();
+    this._shared.testCodeLens.reload();
   }
 
   public async addTestResult(testResult: TestResult): Promise<void> {
