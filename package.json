@@ -5,7 +5,7 @@
   "icon": "resources/icon.png",
   "author": "Piotr Kosek",
   "publisher": "piotrkosek",
-  "version": "2.3.29",
+  "version": "2.3.30",
   "license": "MIT",
   "homepage": "https://github.com/Shelim/vscode-catch2-test-adapter-with-code-lens",
   "repository": {

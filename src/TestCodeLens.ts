@@ -27,10 +27,9 @@ class SymbolData {
   public constructor(
     public name: string,
     public owningName: string,
-    public testPassed: number = 0,
-    public testTotal: number = 0,
+    public testPassed: Set<string>,
+    public testTotal: Set<string>,
     public line: vscode.Range,
-    public failedList: string,
   ) {}
 }
 export class TestCodeLensProvider implements vscode.CodeLensProvider {
@@ -49,41 +48,48 @@ export class TestCodeLensProvider implements vscode.CodeLensProvider {
       var info: SymbolData[] = [];
       for (var i in symbols) {
         var symbol = symbols[i];
-        var testPassed = 0;
-        var testTotal = 0;
+        var testPassed: Set<string> = new Set<string>();
+        var testTotal: Set<string> = new Set<string>();
         var range = symbol['range'] as vscode.Range;
-        var failedList = '';
         for (let t of results) {
           for (let line of t.lines) {
             if (range.start.line <= line - 2 && range.end.line >= line - 2) {
-              if (t.succeed) testPassed++;
-              else failedList += '✘ ' + t.name + ' ';
-              testTotal++;
+              if (t.succeed) testPassed.add(t.name);
+              testTotal.add(t.name);
             }
           }
         }
-        info.push(new SymbolData(symbol['name'], symbol['containerName'], testPassed, testTotal, range, failedList));
+        info.push(new SymbolData(symbol['name'], symbol['containerName'], testPassed, testTotal, range));
       }
       for (var iter: number = info.length - 1; iter >= 0; iter--) {
         if (info[iter].owningName != undefined) {
           for (var item in info) {
             if (info[item].name == info[iter].owningName) {
-              info[item].testPassed += info[iter].testPassed;
-              info[item].testTotal += info[iter].testTotal;
-              info[item].failedList += info[iter].failedList;
+              for (let t of info[iter].testPassed) info[item].testPassed.add(t);
+              for (let t of info[iter].testTotal) info[item].testTotal.add(t);
             }
           }
         }
       }
       for (var item in info) {
+        var failed = '';
+        for (let t of info[item].testTotal) {
+          if (!info[item].testPassed.has(t)) failed += ' ✘ ' + t;
+        }
+        if (failed == '') failed = '✔ All passed!';
+        if (info[item].testTotal.size == 0) failed = '(Not tested)';
         let c: vscode.Command = {
           command: 'extension.showTests',
-          arguments: [info[item].testPassed == info[item].testTotal, info[item].failedList],
+          arguments: [info[item].testPassed.size == info[item].testTotal.size, failed],
           title:
-            info[item].testPassed < info[item].testTotal
-              ? '✘ Failed ' + (info[item].testTotal - info[item].testPassed) + ' / ' + info[item].testTotal
-              : info[item].testTotal > 0
-              ? '✔ Passed all (' + info[item].testTotal + ')'
+            info[item].testPassed.size < info[item].testTotal.size
+              ? '✘ Failed ' +
+                (info[item].testTotal.size - info[item].testPassed.size) +
+                ' / ' +
+                info[item].testTotal.size +
+                ' tests'
+              : info[item].testTotal.size > 0
+              ? '✔ Passed all tests (' + info[item].testTotal.size + ')'
               : '(Not tested)',
         };
 
