@@ -23,6 +23,16 @@ import { Catch2Section, Catch2TestInfo } from './Catch2TestInfo';
 import { AbstractTestSuiteInfo } from './AbstractTestSuiteInfo';
 import { CodeLensProvider } from 'vscode';
 
+class SymbolData {
+  public constructor(
+    public name: string,
+    public owningName: string,
+    public testPassed: number = 0,
+    public testTotal: number = 0,
+    public line: vscode.Range,
+    public failedList: string,
+  ) {}
+}
 export class TestCodeLensProvider implements vscode.CodeLensProvider {
   public constructor(private readonly _shared: SharedVariables) {}
 
@@ -36,43 +46,50 @@ export class TestCodeLensProvider implements vscode.CodeLensProvider {
     if (this._shared.isCodeLens) {
       var results = this._shared.testResults.queryFile(document.fileName);
       var ret: vscode.CodeLens[] = [];
+      var info: SymbolData[] = [];
       for (var i in symbols) {
         var symbol = symbols[i];
         var testPassed = 0;
         var testTotal = 0;
         var range = symbol['range'] as vscode.Range;
-        var tooltip = '';
-        var messageBox = '';
+        var failedList = '';
         for (let t of results) {
           for (let line of t.lines) {
             if (range.start.line <= line - 2 && range.end.line >= line - 2) {
-              if (t.succeed) {
-                tooltip += '✔ ' + t.name + '\n';
-                testPassed++;
-              } else {
-                messageBox += '✘ ' + t.name + ' ';
-                tooltip += '✘ ' + t.name + '\n';
-              }
+              if (t.succeed) testPassed++;
+              else failedList += '✘ ' + t.name + ' ';
               testTotal++;
             }
           }
         }
+        info.push(new SymbolData(symbol['name'], symbol['containerName'], testPassed, testTotal, range, failedList));
+      }
+      for (var iter: number = info.length - 1; iter >= 0; iter--) {
+        if (info[iter].owningName != undefined) {
+          for (var item in info) {
+            if (info[item].name == info[iter].owningName) {
+              info[item].testPassed += info[iter].testPassed;
+              info[item].testTotal += info[iter].testTotal;
+              info[item].failedList += info[iter].failedList;
+            }
+          }
+        }
+      }
+      for (var item in info) {
         let c: vscode.Command = {
           command: 'extension.showTests',
-          arguments: [testPassed == testTotal, messageBox],
+          arguments: [info[item].testPassed == info[item].testTotal, info[item].failedList],
           title:
-            testPassed < testTotal
-              ? '✘ Failed ' + (testTotal - testPassed) + ' / ' + testTotal
-              : testTotal > 0
-              ? '✔ Passed all (' + testTotal + ')'
+            info[item].testPassed < info[item].testTotal
+              ? '✘ Failed ' + (info[item].testTotal - info[item].testPassed) + ' / ' + info[item].testTotal
+              : info[item].testTotal > 0
+              ? '✔ Passed all (' + info[item].testTotal + ')'
               : '(Not tested)',
-          tooltip: 'Tests:\n______________\n' + tooltip,
         };
 
-        let codeLens = new vscode.CodeLens(range, c);
+        let codeLens = new vscode.CodeLens(info[item].line, c);
         ret.push(codeLens);
       }
-
       return ret;
     }
   }

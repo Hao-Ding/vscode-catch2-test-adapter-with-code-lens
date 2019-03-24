@@ -28,6 +28,20 @@ export class TestResults {
     return ret;
   }
 
+  public removeResultsForFile(filename: string): void {
+    let ret = this._filemap.get(filename);
+    while (ret == undefined && filename.indexOf('\\') >= 0) {
+      filename = filename.substring(filename.indexOf('\\') + 1);
+      ret = this._filemap.get(filename);
+    }
+    this._filemap.delete(filename);
+  }
+
+  public clearResults(): void {
+    this._results = new Map<string, TestResult>();
+    this._filemap = new Map<string, Set<TestInfo>>();
+  }
+
   public async addTestResult(testResult: TestResult): Promise<void> {
     testResult.resolve();
     this._results.set(testResult.name, testResult);
