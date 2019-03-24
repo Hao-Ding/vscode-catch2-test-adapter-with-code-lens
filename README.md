@@ -1,8 +1,8 @@
 # Catch2 and Google Test Explorer for Visual Studio Code (with code lens)
 
-**IMPORTANT: This is fork of original `Catch2 and Google Test Explorer for Visual Studio Code` repo**
+**IMPORTANT: This is fork of original [Catch2 and Google Test Explorer for Visual Studio Code](https://github.com/matepek/vscode-catch2-test-adapter) repo**
 I've added ability to present code lens, directly in code:
-![Screen2](https://media.githubusercontent.com/media/Shelim/vscode-catch2-test-adapter-with-code-lens/master/screen.png)
+![screen](https://raw.githubusercontent.com/Shelim/vscode-catch2-test-adapter-with-code-lens/master/screen.png)
 
 **IMPORTANT:**
 This only works on Windows with [OpenCppCoverage](https://github.com/OpenCppCoverage/OpenCppCoverage) and compiler able to produce PDB files.
@@ -11,6 +11,10 @@ If you cannot met the requirenments, please use original version of this plugin.
 
 **Important:**
 This plugin is **not** actively maintained. Use at your own risk. If you wish so, feel free to fork this and update code.
+
+**Below you can find original readme**
+
+---
 
 This extension allows you to run your [Catch2](https://github.com/catchorg/Catch2)
 and [Google Test](https://github.com/google/googletest) tests using the
@@ -21,7 +25,7 @@ and [Google Test](https://github.com/google/googletest) tests using the
 | Property                                                                                                                                         | Description                                                                                                                                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `catch2TestExplorer.enableCodeLens`                                                                                                              | Set it to true, for the magic to happen                                                                                                                                                                                                                                                                                  |
-| `catch2TestExplorer.openCppCoveragePath | This has to point to the [OpenCppCoverage](https://github.com/OpenCppCoverage/OpenCppCoverage) binary. |
+| `catch2TestExplorer.openCppCoveragePath` | This has to point to the [OpenCppCoverage](https://github.com/OpenCppCoverage/OpenCppCoverage) binary. |
 | `catch2TestExplorer.executables`                                                                                                                 | The location of your test executables (relative to the workspace folder or absolute path) and with a lot of other setting. [Details](https://github.com/matepek/vscode-catch2-test-adapter#catch2TestExplorerexecutables)                                                                                                |
 | `catch2TestExplorer.defaultCwd`                                                                                                                  | The working directory where the test is run (relative to the workspace folder or absolue path), if it isn't provided in "executables". (It resolves variables.)                                                                                                                                                          |
 | `catch2TestExplorer.defaultEnv`                                                                                                                  | Environment variables to be set when running the tests. (It resolves variables.)                                                                                                                                                                                                                                         |
@@ -189,7 +193,7 @@ Note that `name` and `request` are filled, if they are undefined, so it is not n
 
 ## License
 
-[The Unlicense](https://choosealicense.com/licenses/unlicense/)
+MIT/X11
 
 ## Known issues
 
